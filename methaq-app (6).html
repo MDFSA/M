@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ميثاق — لوحة طلبات الشراء والمحادثات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F4EF; --ink:#20241F; --ink-soft:#5B655E;
+    --petrol:#0E3D3B; --petrol-dark:#082625; --petrol-mist:#DFE9E6;
+    --brass:#B08A4E; --brick:#B0432E; --line:#DCD7C9; --white:#FFFFFF;
+    --tag-yes-bg:#E6EEE0; --tag-yes-fg:#3C6B2E;
+    --tag-no-bg:#EDEAE1; --tag-no-fg:#6B6558;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans Arabic',sans-serif;line-height:1.65;}
+  h1,h2,h3,button{font-family:'Tajawal',sans-serif;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 28px;}
+  @media(max-width:640px){.wrap{padding:0 18px;}}
+
+  /* NAV */
+  header{position:sticky;top:0;z-index:40;background:rgba(246,244,239,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  nav{display:flex;align-items:center;justify-content:space-between;height:66px;}
+  .logo{font-size:21px;font-weight:800;color:var(--petrol-dark);}
+  .logo small{display:block;font-family:'IBM Plex Sans Arabic';font-weight:500;font-size:11px;color:var(--ink-soft);margin-top:-2px;}
+  .nav-mid{display:flex;gap:6px;}
+  .nav-btn{
+    background:none;border:none;padding:9px 16px;border-radius:6px;font-weight:600;font-size:14px;
+    color:var(--ink-soft);cursor:pointer;position:relative;
+  }
+  .nav-btn.active{background:var(--petrol-mist);color:var(--petrol-dark);}
+  .nav-badge{
+    position:absolute;top:2px;left:6px;background:var(--brick);color:#fff;font-size:10.5px;font-weight:800;
+    min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;
+  }
+  .nav-right{display:flex;align-items:center;gap:12px;}
+  .role-pill{font-size:12.5px;color:var(--ink-soft);background:var(--white);border:1px solid var(--line);padding:6px 12px;border-radius:20px;}
+  .btn-post{background:var(--petrol-dark);color:var(--white);padding:10px 18px;border-radius:5px;font-weight:700;font-size:13.5px;border:none;cursor:pointer;}
+  .btn-post:hover{background:var(--petrol);}
+  .btn-logout{background:none;border:1px solid var(--line);padding:9px 14px;border-radius:5px;font-size:13px;color:var(--ink-soft);cursor:pointer;}
+
+  .screen{display:none;padding:36px 0 80px;}
+  .screen.active{display:block;}
+
+  /* ---------- LOGIN ---------- */
+  #screen-login{padding-top:70px;}
+  .login-box{max-width:400px;margin:0 auto;background:var(--white);border:1px solid var(--line);border-radius:10px;padding:36px 32px;}
+  .login-box h2{font-size:22px;font-weight:800;color:var(--petrol-dark);margin-bottom:6px;text-align:center;}
+  .login-box p.sub{font-size:13.5px;color:var(--ink-soft);text-align:center;margin-bottom:26px;}
+  .role-toggle{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:4px;margin-bottom:24px;}
+  .role-toggle button{
+    flex:1;background:none;border:none;padding:10px;border-radius:6px;font-weight:700;font-size:13.5px;
+    color:var(--ink-soft);cursor:pointer;
+  }
+  .role-toggle button.active{background:var(--petrol-dark);color:#fff;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;}
+  .field input{width:100%;border:1px solid var(--line);border-radius:6px;padding:11px 14px;font-size:14px;font-family:inherit;}
+  .login-submit{
+    width:100%;background:var(--petrol-dark);color:#fff;border:none;padding:13px;border-radius:6px;
+    font-weight:700;font-size:14.5px;cursor:pointer;margin-top:8px;
+  }
+  .login-submit:hover{background:var(--petrol);}
+  .login-foot{text-align:center;font-size:12.5px;color:var(--ink-soft);margin-top:18px;}
+
+  /* ---------- BOARD ---------- */
+  .hero{padding:0 0 28px;}
+  .hero h1{font-size:28px;font-weight:800;color:var(--petrol-dark);margin-bottom:8px;}
+  .hero p{color:var(--ink-soft);font-size:15px;max-width:560px;}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;padding:20px 0 28px;border-bottom:1px solid var(--line);margin-bottom:28px;}
+  .chip{background:var(--white);border:1px solid var(--line);color:var(--ink-soft);font-size:13px;font-weight:600;padding:8px 15px;border-radius:20px;cursor:pointer;}
+  .chip.active{background:var(--petrol-dark);color:#fff;border-color:var(--petrol-dark);}
+
+  .search-row{margin:22px 0 18px;}
+  .search-row input{
+    width:100%;border:1px solid var(--line);border-radius:8px;padding:13px 16px;font-size:14.5px;
+    font-family:inherit;background:var(--white);
+  }
+  .filter-panel{
+    display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;
+    padding-bottom:24px;border-bottom:1px solid var(--line);margin-bottom:28px;
+  }
+  .filter-group{flex:1;min-width:260px;}
+  .filter-label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:10px;}
+  .chip-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .lc-group{
+    flex:0 0 auto;background:var(--petrol-mist);border:1px solid #C9DAD5;border-radius:10px;
+    padding:14px 16px;min-width:220px;
+  }
+  .lc-group .filter-label{color:var(--petrol-dark);}
+  .empty-state{display:none;text-align:center;padding:60px 20px;color:var(--ink-soft);font-size:14px;}
+  .feed{display:flex;flex-direction:column;gap:16px;}
+  .listing{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:22px 24px;transition:box-shadow .2s;}
+  .listing:hover{box-shadow:0 16px 34px -20px rgba(32,36,31,.25);}
+  .listing-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px;flex-wrap:wrap;}
+  .company{display:flex;align-items:center;gap:12px;}
+  .avatar{width:42px;height:42px;border-radius:50%;background:var(--petrol-mist);color:var(--petrol-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;}
+  .poster-name{font-weight:700;font-size:15px;}
+  .company-name{font-weight:600;font-size:13px;color:var(--ink-soft);margin-top:1px;}
+  .company-meta{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .hidden-id{font-style:italic;color:#8B8578;}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;}
+  .tag{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:20px;}
+  .tag.type{background:var(--petrol-mist);color:var(--petrol-dark);}
+  .tag.lc-yes{background:var(--tag-yes-bg);color:var(--tag-yes-fg);}
+  .tag.lc-no{background:var(--tag-no-bg);color:var(--tag-no-fg);}
+  .listing-title{font-size:17px;font-weight:700;margin-bottom:6px;}
+  .listing-desc{font-size:13.5px;color:var(--ink-soft);margin-bottom:14px;}
+  .meta-row{display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft);margin-bottom:14px;}
+  .meta-row b{color:var(--ink);font-weight:700;}
+  .items{border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);margin-bottom:16px;}
+  .item-row{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-top:1px solid var(--line);font-size:13px;}
+  .item-row:first-child{border-top:none;}
+  .item-row .item-name{font-weight:600;}
+  .item-row .item-desc{color:var(--ink-soft);flex:1;padding:0 14px;}
+  .item-row .item-qty{color:var(--ink-soft);white-space:nowrap;font-weight:600;}
+  .listing-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+  .deadline{font-size:12px;color:var(--brass);font-weight:700;}
+  .btn-msg{background:var(--petrol-dark);color:#fff;border:none;padding:9px 18px;border-radius:5px;font-weight:700;font-size:13px;cursor:pointer;}
+  .btn-msg:hover{background:var(--petrol);}
+
+  /* ---------- INBOX ---------- */
+  .inbox-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;}
+  .inbox-head h1{font-size:26px;font-weight:800;color:var(--petrol-dark);}
+  .inbox-head span{font-size:13.5px;color:var(--ink-soft);}
+  .conv-list{background:var(--white);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .conv{
+    display:flex;align-items:center;gap:14px;padding:16px 20px;border-top:1px solid var(--line);cursor:pointer;
+    transition:background .15s;
+  }
+  .conv:first-child{border-top:none;}
+  .conv:hover{background:var(--paper);}
+  .conv .avatar{flex-shrink:0;}
+  .conv-main{flex:1;min-width:0;}
+  .conv-top-row{display:flex;justify-content:space-between;gap:10px;}
+  .conv-name{font-weight:700;font-size:14.5px;}
+  .conv-time{font-size:12px;color:var(--ink-soft);flex-shrink:0;}
+  .conv-preview{font-size:13px;color:var(--ink-soft);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .conv.unread .conv-name{font-weight:800;}
+  .conv.unread .conv-preview{color:var(--ink);font-weight:600;}
+  .conv-badge{background:var(--brick);color:#fff;font-size:11.5px;font-weight:800;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 6px;flex-shrink:0;}
+  .conv-listing-tag{font-size:11px;color:var(--petrol);background:var(--petrol-mist);padding:2px 9px;border-radius:12px;display:inline-block;margin-top:5px;}
+
+  /* ---------- CHAT ---------- */
+  .chat-shell{background:var(--white);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;height:640px;}
+  .chat-head{display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line);}
+  .chat-head b{display:block;font-size:15px;}
+  .chat-head span{font-size:12.5px;color:var(--ink-soft);}
+  .chat-back{background:none;border:none;font-size:18px;color:var(--ink-soft);cursor:pointer;margin-left:4px;}
+  .chat-body{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:6px;background:var(--paper);}
+  .msg-group{max-width:72%;margin-bottom:8px;}
+  .msg-group.them{align-self:flex-start;}
+  .msg-group.me{align-self:flex-end;margin-right:auto;margin-left:0;align-self:flex-end;}
+  .msg-sender{font-size:11.5px;font-weight:700;color:var(--ink-soft);margin-bottom:4px;padding:0 4px;}
+  .bubble{padding:11px 15px;border-radius:12px;font-size:13.5px;line-height:1.6;}
+  .them .bubble{background:var(--white);border:1px solid var(--line);border-bottom-left-radius:3px;}
+  .me .bubble{background:var(--petrol-mist);border-bottom-right-radius:3px;}
+  .bubble.quote{background:var(--white);border:1px solid var(--brass);border-radius:8px;font-size:13px;}
+  .bubble.quote b{color:var(--petrol-dark);}
+  .bubble.doc-request ul{margin:8px 0 0 0;padding-right:18px;}
+  .bubble.doc-request li{margin-bottom:4px;}
+  .bubble-time{font-size:10.5px;color:var(--ink-soft);margin-top:4px;padding:0 4px;}
+  .chat-input{display:flex;gap:8px;padding:16px 18px;border-top:1px solid var(--line);background:var(--white);}
+  .chat-input input{flex:1;border:1px solid var(--line);border-radius:20px;padding:11px 16px;font-size:13.5px;font-family:inherit;}
+  .chat-input button{background:var(--petrol-dark);color:#fff;border:none;border-radius:20px;padding:0 20px;font-weight:700;font-size:13px;cursor:pointer;}
+
+  /* ---------- COMMUNITY ---------- */
+  .community-head{margin-bottom:24px;}
+  .community-head h1{font-size:26px;font-weight:800;color:var(--petrol-dark);margin-bottom:6px;}
+  .community-head p{font-size:14px;color:var(--ink-soft);max-width:560px;}
+  .composer{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:24px;}
+  .composer-as{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;}
+  .composer textarea{
+    width:100%;border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-family:inherit;
+    font-size:14px;resize:vertical;min-height:64px;margin-bottom:10px;
+  }
+  .composer-row{display:flex;justify-content:flex-end;}
+  .btn-publish{background:var(--petrol-dark);color:#fff;border:none;padding:10px 22px;border-radius:6px;font-weight:700;font-size:13.5px;cursor:pointer;}
+  .btn-publish:hover{background:var(--petrol);}
+
+  .post{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin-bottom:14px;}
+  .role-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;}
+  .role-badge.company{background:var(--petrol-mist);color:var(--petrol-dark);}
+  .role-badge.supplier{background:#F1E7D6;color:var(--brass);}
+
+  .gmsg{max-width:72%;margin-bottom:12px;display:flex;flex-direction:column;}
+  .gmsg.me{align-self:flex-end;align-items:flex-end;}
+  .gmsg.them{align-self:flex-start;align-items:flex-start;}
+  .gmsg-sender{display:flex;align-items:center;gap:7px;margin-bottom:4px;padding:0 4px;}
+  .gmsg-sender b{font-size:12.5px;}
+  .gmsg .bubble{padding:11px 15px;border-radius:12px;font-size:13.5px;line-height:1.6;}
+  .gmsg.them .bubble{background:var(--white);border:1px solid var(--line);border-bottom-left-radius:3px;}
+  .gmsg.me .bubble{background:var(--petrol-mist);border-bottom-right-radius:3px;}
+  .gmsg-time{font-size:10.5px;color:var(--ink-soft);margin-top:4px;padding:0 4px;}
+
+  footer{border-top:1px solid var(--line);padding:26px 0;text-align:center;font-size:13px;color:var(--ink-soft);}
+
+  /* ---------- ABOUT ---------- */
+  .about-hero{padding:10px 0 40px;border-bottom:1px solid var(--line);margin-bottom:40px;}
+  .about-hero .eyebrow{display:inline-block;font-size:12.5px;font-weight:700;color:var(--brass);background:var(--white);border:1px solid var(--line);padding:6px 14px;border-radius:20px;margin-bottom:16px;}
+  .about-hero h1{font-size:32px;font-weight:800;color:var(--petrol-dark);line-height:1.5;margin-bottom:14px;}
+  .about-hero p{font-size:15.5px;color:var(--ink-soft);max-width:640px;}
+
+  .about-section{margin-bottom:48px;}
+  .about-section h2{font-size:22px;font-weight:800;color:var(--petrol-dark);margin-bottom:18px;}
+  .about-section h2 span{color:var(--brass);}
+
+  .problem-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  @media(max-width:700px){.problem-list{grid-template-columns:1fr;}}
+  .problem-card{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:18px 20px;}
+  .problem-card b{display:block;font-size:14.5px;margin-bottom:6px;color:var(--ink);}
+  .problem-card span{font-size:13.5px;color:var(--ink-soft);}
+
+  .solution-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  @media(max-width:800px){.solution-grid{grid-template-columns:1fr;}}
+  .solution-card{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:22px 20px;}
+  .solution-card .role-tag{display:inline-block;font-size:11.5px;font-weight:700;color:var(--petrol-dark);background:var(--petrol-mist);padding:4px 12px;border-radius:20px;margin-bottom:12px;}
+  .solution-card h3{font-size:16px;font-weight:700;margin-bottom:8px;}
+  .solution-card p{font-size:13.5px;color:var(--ink-soft);}
+
+  .charter-block{
+    background:var(--petrol-dark);color:#fff;border-radius:12px;padding:36px 32px;
+    display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:flex-start;
+  }
+  @media(max-width:640px){.charter-block{grid-template-columns:1fr;}}
+  .charter-mark{
+    font-family:'Tajawal',sans-serif;font-size:44px;font-weight:900;color:var(--brass-bright,#C9A15E);
+    border:2px solid var(--brass-bright,#C9A15E);border-radius:50%;width:88px;height:88px;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .charter-block h3{font-size:19px;font-weight:800;margin-bottom:10px;color:#fff;}
+  .charter-block p{font-size:14.5px;color:#C7D5D2;line-height:1.8;margin-bottom:10px;}
+  .charter-block p:last-child{margin-bottom:0;}
+
+  /* ---------- NEWS ---------- */
+  .news-head{margin-bottom:22px;}
+  .news-head h1{font-size:28px;font-weight:800;color:var(--petrol-dark);margin-bottom:8px;}
+  .news-head p{font-size:14.5px;color:var(--ink-soft);max-width:560px;}
+  .news-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
+  @media(max-width:760px){.news-grid{grid-template-columns:1fr;}}
+  .news-feature{
+    display:grid;grid-template-columns:1.2fr 1fr;gap:0;background:var(--white);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:32px;
+  }
+  @media(max-width:760px){.news-feature{grid-template-columns:1fr;}}
+  .news-feature img{width:100%;height:100%;min-height:220px;object-fit:cover;}
+  .news-feature-body{padding:30px 32px;display:flex;flex-direction:column;justify-content:center;}
+  .news-feature-body .news-date{margin-bottom:10px;}
+  .news-feature-body h2{font-size:22px;font-weight:800;color:var(--petrol-dark);line-height:1.5;margin-bottom:12px;}
+  .news-feature-body p{font-size:14px;color:var(--ink-soft);line-height:1.75;}
+  .news-card{background:var(--white);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
+  .news-card img{width:100%;height:170px;object-fit:cover;display:block;}
+  .news-card-body{padding:18px 20px;display:flex;flex-direction:column;flex-grow:1;}
+  .news-date{font-size:12px;color:var(--ink-soft);font-weight:600;}
+  .news-card h3{font-size:15.5px;font-weight:700;margin:8px 0;line-height:1.55;}
+  .news-card p{font-size:13.5px;color:var(--ink-soft);flex-grow:1;line-height:1.65;}
+  .news-note{margin-top:26px;font-size:12.5px;color:var(--ink-soft);text-align:center;}
+
+  /* ---------- CREATE REQUEST FORM ---------- */
+  .form-head{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+  .form-head h1{font-size:24px;font-weight:800;color:var(--petrol-dark);}
+  .request-form{display:flex;flex-direction:column;gap:22px;padding-bottom:60px;}
+  .form-section{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:24px 26px;}
+  .form-section h3{font-size:15.5px;font-weight:700;color:var(--petrol-dark);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--line);}
+  .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:640px){.form-row-2{grid-template-columns:1fr;}}
+  .field textarea, .field select{
+    width:100%;border:1px solid var(--line);border-radius:6px;padding:11px 14px;font-size:14px;font-family:inherit;
+  }
+  .field textarea{min-height:80px;resize:vertical;}
+  .privacy-box{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-top:6px;}
+  .check-row{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink);padding:6px 0;cursor:pointer;}
+  .check-row input{width:16px;height:16px;accent-color:var(--petrol-dark);cursor:pointer;}
+  .lc-toggle-box{background:var(--petrol-mist);border:1px solid #C9DAD5;border-radius:10px;padding:14px 16px;margin-top:4px;}
+  .toggle-pill{
+    background:var(--white);border:1px solid var(--line);color:var(--ink-soft);font-size:13px;font-weight:700;
+    padding:9px 18px;border-radius:20px;cursor:pointer;font-family:inherit;
+  }
+  .toggle-pill.active{background:var(--petrol-dark);color:#fff;border-color:var(--petrol-dark);}
+  #itemsBuilder{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+  .item-builder-row{display:grid;grid-template-columns:1fr 1.4fr .7fr auto;gap:8px;align-items:center;}
+  @media(max-width:640px){.item-builder-row{grid-template-columns:1fr 1fr;}}
+  .item-builder-row input{border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13.5px;font-family:inherit;}
+  .remove-item-btn{background:none;border:1px solid var(--line);color:var(--brick);border-radius:6px;width:36px;height:38px;cursor:pointer;font-size:14px;}
+  .btn-add-item{background:none;border:1.5px dashed var(--line);color:var(--petrol-dark);font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:6px;cursor:pointer;width:100%;}
+  .btn-add-item:hover{border-color:var(--petrol);}
+  .form-submit-row{display:flex;justify-content:flex-end;gap:12px;}
+  .btn-ghost-form{background:none;border:1px solid var(--line);color:var(--ink-soft);padding:12px 24px;border-radius:6px;font-weight:700;font-size:14px;cursor:pointer;}
+  .btn-publish-form{background:var(--petrol-dark);color:#fff;border:none;padding:12px 28px;border-radius:6px;font-weight:700;font-size:14px;cursor:pointer;}
+  .btn-publish-form:hover{background:var(--petrol);}
+  .btn-create{background:var(--petrol-dark);color:#fff;border:none;padding:12px 22px;border-radius:6px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap;}
+  .btn-create:hover{background:var(--petrol);}
+  .board-top-row{display:flex;gap:14px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;}
+  .board-top-row .hero{flex:1;min-width:260px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="logo">ميثاق<small>لوحة طلبات الشراء</small></div>
+      <div class="nav-mid">
+        <button class="nav-btn active" id="navBoard" onclick="showScreen('board')">الطلبات</button>
+        <button class="nav-btn" id="navInbox" onclick="showScreen('inbox')">
+          الرسائل <span class="nav-badge" id="navBadge">٦</span>
+        </button>
+        <button class="nav-btn" id="navCommunity" onclick="showScreen('community')">مجتمع عام</button>
+        <button class="nav-btn" id="navAbout" onclick="showScreen('about')">نبذة عنا</button>
+        <button class="nav-btn" id="navNews" onclick="showScreen('news')">الأخبار</button>
+      </div>
+      <div class="nav-right">
+        <span class="role-pill" id="rolePill">مسجّل دخول كـ: شركة أ</span>
+        <button class="btn-logout" onclick="showScreen('login')">تسجيل الخروج</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- ===================== LOGIN ===================== -->
+<div class="screen" id="screen-login">
+  <div class="wrap">
+    <div class="login-box">
+      <h2>تسجيل الدخول</h2>
+      <p class="sub">ادخل إلى حسابك لمتابعة طلباتك أو التواصل مع الموردين</p>
+      <div class="role-toggle">
+        <button class="active" id="roleCompanyBtn" onclick="setLoginRole('company')">شركة (طالب شراء)</button>
+        <button id="roleSupplierBtn" onclick="setLoginRole('supplier')">مورّد</button>
+      </div>
+      <div class="field">
+        <label>البريد الإلكتروني</label>
+        <input type="email" placeholder="name@company.com">
+      </div>
+      <div class="field">
+        <label>كلمة المرور</label>
+        <input type="password" placeholder="••••••••">
+      </div>
+      <button class="login-submit" onclick="doLogin()">دخول</button>
+      <p class="login-foot">ما عندك حساب؟ <a href="#" style="color:var(--petrol);font-weight:700;">أنشئ حساب جديد</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== BOARD ===================== -->
+<div class="screen" id="screen-board">
+  <div class="wrap">
+    <div class="board-top-row">
+      <div class="hero">
+        <h1>انشر طلب الشراء، والموردون يوصلونك مباشرة</h1>
+        <p>اكتب تفاصيل طلبك ببنوده، وخلّي الموردين المهتمين يراسلونك على الخاص داخل الموقع ويتفاهمون معك مباشرة.</p>
+      </div>
+      <button class="btn-create" onclick="showScreen('create')">+ إنشاء طلب</button>
+    </div>
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="ابحث بعنوان الطلب، اسم الشركة، أو نوع البند...">
+    </div>
+
+    <div class="filter-panel">
+      <div class="filter-group">
+        <span class="filter-label">التصنيف</span>
+        <div class="chip-row">
+          <span class="chip active" data-cat="all">كل التصنيفات</span>
+          <span class="chip" data-cat="security">أمن وحراسة</span>
+          <span class="chip" data-cat="materials">توريد مواد</span>
+          <span class="chip" data-cat="services">خدمات عامة</span>
+          <span class="chip" data-cat="contracting">مقاولات وصيانة</span>
+          <span class="chip" data-cat="it">تقنية المعلومات</span>
+          <span class="chip" data-cat="logistics">نقل ولوجستيات</span>
+          <span class="chip" data-cat="consulting">استشارات ودراسات</span>
+          <span class="chip" data-cat="multi">توريد متعدد الأصناف</span>
+        </div>
+      </div>
+      <div class="filter-group lc-group">
+        <span class="filter-label">يتطلب محتوى محلي؟</span>
+        <div class="chip-row">
+          <span class="chip active" data-lc="all">الكل</span>
+          <span class="chip" data-lc="yes">نعم</span>
+          <span class="chip" data-lc="no">لا</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="feed" id="feed">
+
+      <div class="listing" data-cat="security" data-lc="yes">
+        <div class="listing-top">
+          <div class="company">
+            <div class="avatar">خ</div>
+            <div>
+              <div class="poster-name">خالد الحربي</div>
+              <div class="company-name">شركة أ</div>
+              <div class="company-meta">الرياض · نُشر قبل يومين</div>
+            </div>
+          </div>
+          <div class="tags"><span class="tag type">أمن وحراسة</span><span class="tag lc-yes">يتطلب محتوى محلي</span></div>
+        </div>
+        <div class="listing-title">طلب عروض — خدمات حراسة أمنية لـ ٢٦ موقع</div>
+        <div class="listing-desc">مطلوب مورد لتقديم خدمات حراسة أمنية على مستوى عدة مواقع بمدد تعاقد متفاوتة.</div>
+        <div class="meta-row"><span>الكمية الإجمالية: <b>٢٩ حارس</b></span><span>المدة: <b>سنة قابلة للتجديد</b></span></div>
+        <div class="items">
+          <div class="item-row"><span class="item-name">حراسة نهارية</span><span class="item-desc">مواقع المكاتب الإدارية، دوام ١٢ ساعة</span><span class="item-qty">١٦ حارس</span></div>
+          <div class="item-row"><span class="item-name">حراسة ليلية</span><span class="item-desc">مواقع المستودعات، دوام ١٢ ساعة</span><span class="item-qty">١٣ حارس</span></div>
+        </div>
+        <div class="listing-bottom">
+          <span class="deadline">آخر موعد لاستلام العروض: ٢٠ يوليو</span>
+          <button class="btn-msg" onclick="openChat('conv1')">راسل الشركة</button>
+        </div>
+      </div>
+
+      <div class="listing" data-cat="materials" data-lc="no">
+        <div class="listing-top">
+          <div class="company">
+            <div class="avatar">ب</div>
+            <div>
+              <div class="poster-name hidden-id">مخفي من قبل رافع الطلب</div>
+              <div class="company-name">شركة ب</div>
+              <div class="company-meta">جدة · نُشر قبل ٥ ساعات</div>
+            </div>
+          </div>
+          <div class="tags"><span class="tag type">توريد مواد</span><span class="tag lc-no">لا يشترط محتوى محلي</span></div>
+        </div>
+        <div class="listing-title">طلب توريد — أثاث ومعدات مكتبية</div>
+        <div class="listing-desc">تجهيز مبنى إداري جديد بأثاث مكتبي كامل، التسليم على دفعتين خلال ٦ أسابيع.</div>
+        <div class="meta-row"><span>الكمية الإجمالية: <b>١٢٠ قطعة</b></span><span>التسليم: <b>خلال ٦ أسابيع</b></span></div>
+        <div class="items">
+          <div class="item-row"><span class="item-name">مكتب موظف</span><span class="item-desc">مكتب خشبي مع أدراج، مقاس قياسي</span><span class="item-qty">٦٠ قطعة</span></div>
+          <div class="item-row"><span class="item-name">كرسي مكتبي</span><span class="item-desc">دعم قطني، قابل للتعديل</span><span class="item-qty">٦٠ قطعة</span></div>
+        </div>
+        <div class="listing-bottom">
+          <span class="deadline">آخر موعد لاستلام العروض: ١٥ يوليو</span>
+          <button class="btn-msg" onclick="openChat('conv2')">راسل الشركة</button>
+        </div>
+      </div>
+
+      <div class="listing" data-cat="multi" data-lc="yes">
+        <div class="listing-top">
+          <div class="company">
+            <div class="avatar">م</div>
+            <div>
+              <div class="poster-name">منيرة الدوسري</div>
+              <div class="company-name hidden-id">مخفي من قبل رافع الطلب</div>
+              <div class="company-meta">الخبر · نُشر قبل ٣ ساعات</div>
+            </div>
+          </div>
+          <div class="tags"><span class="tag type">توريد متعدد الأصناف</span><span class="tag lc-yes">يتطلب محتوى محلي</span></div>
+        </div>
+        <div class="listing-title">طلب توريد شامل — تجهيز خط إنتاج جديد</div>
+        <div class="listing-desc">طلب واحد يغطي عدة أنواع منتجات مختلفة، ونفضّل مورد واحد يغطي أكثر من بند أو عدة موردين متخصصين.</div>
+        <div class="meta-row"><span>عدد الأصناف: <b>٤ أنواع مختلفة</b></span><span>التسليم: <b>خلال ٣ أسابيع</b></span></div>
+        <div class="items">
+          <div class="item-row"><span class="item-name">مواد تعبئة وتغليف</span><span class="item-desc">أكياس مقاومة للرطوبة، مقاسات متعددة</span><span class="item-qty">٥٠٠٠ كرتون</span></div>
+          <div class="item-row"><span class="item-name">معدات سلامة مهنية</span><span class="item-desc">خوذ، قفازات، أحذية سلامة</span><span class="item-qty">٨٠ طقم</span></div>
+          <div class="item-row"><span class="item-name">أجهزة قياس ومعايرة</span><span class="item-desc">موازين رقمية معتمدة</span><span class="item-qty">٦ أجهزة</span></div>
+          <div class="item-row"><span class="item-name">خدمة نقل وتوصيل</span><span class="item-desc">نقل بارد للمستودع المركزي</span><span class="item-qty">دوري أسبوعي</span></div>
+        </div>
+        <div class="listing-bottom">
+          <span class="deadline">آخر موعد لاستلام العروض: ١٨ يوليو</span>
+          <button class="btn-msg" onclick="openChat('conv3')">راسل الشركة</button>
+        </div>
+      </div>
+
+      <div class="listing" data-cat="contracting" data-lc="yes">
+        <div class="listing-top">
+          <div class="company">
+            <div class="avatar">؟</div>
+            <div>
+              <div class="poster-name hidden-id">مخفي من قبل رافع الطلب</div>
+              <div class="company-name hidden-id">مخفي من قبل رافع الطلب</div>
+              <div class="company-meta">الدمام · نُشر أمس</div>
+            </div>
+          </div>
+          <div class="tags"><span class="tag type">مقاولات وصيانة</span><span class="tag lc-yes">يتطلب محتوى محلي</span></div>
+        </div>
+        <div class="listing-title">طلب عروض — أعمال صيانة كهربائية دورية</div>
+        <div class="listing-desc">عقد صيانة دورية للأنظمة الكهربائية في ٤ مباني إدارية، يشمل الفحص الوقائي والطوارئ.</div>
+        <div class="meta-row"><span>الكمية الإجمالية: <b>٤ مبانٍ</b></span><span>المدة: <b>عقد سنوي</b></span></div>
+        <div class="items">
+          <div class="item-row"><span class="item-name">صيانة وقائية</span><span class="item-desc">فحص شهري لكل مبنى</span><span class="item-qty">١٢ زيارة/سنة</span></div>
+          <div class="item-row"><span class="item-name">صيانة طارئة</span><span class="item-desc">استجابة خلال ٤ ساعات</span><span class="item-qty">حسب الطلب</span></div>
+        </div>
+        <div class="listing-bottom">
+          <span class="deadline">آخر موعد لاستلام العروض: ٢٥ يوليو</span>
+          <button class="btn-msg" onclick="openChat('conv4')">راسل الشركة</button>
+        </div>
+      </div>
+
+      <div class="listing" data-cat="it" data-lc="no">
+        <div class="listing-top">
+          <div class="company">
+            <div class="avatar">ت</div>
+            <div>
+              <div class="poster-name">تركي المطيري</div>
+              <div class="company-name">شركة أ</div>
+              <div class="company-meta">الرياض · نُشر قبل ٤ أيام</div>
+            </div>
+          </div>
+          <div class="tags"><span class="tag type">تقنية المعلومات</span><span class="tag lc-no">لا يشترط محتوى محلي</span></div>
+        </div>
+        <div class="listing-title">طلب عروض — ترخيص وتركيب نظام إدارة مستندات</div>
+        <div class="listing-desc">تزويد وتركيب نظام إلكتروني لإدارة وأرشفة المستندات لعدد ٣٠ مستخدم، مع تدريب الفريق.</div>
+        <div class="meta-row"><span>عدد المستخدمين: <b>٣٠ مستخدم</b></span><span>التنفيذ: <b>خلال شهر</b></span></div>
+        <div class="items">
+          <div class="item-row"><span class="item-name">ترخيص النظام</span><span class="item-desc">اشتراك سنوي، ٣٠ مستخدم</span><span class="item-qty">٣٠ ترخيص</span></div>
+          <div class="item-row"><span class="item-name">تدريب المستخدمين</span><span class="item-desc">جلستان تدريبيتان عن بُعد أو حضورياً</span><span class="item-qty">جلستان</span></div>
+        </div>
+        <div class="listing-bottom">
+          <span class="deadline">آخر موعد لاستلام العروض: ٢٢ يوليو</span>
+          <button class="btn-msg" onclick="openChat('conv7')">راسل الشركة</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="empty-state" id="emptyState">لا توجد طلبات مطابقة لبحثك أو الفلتر المحدد. جرّب تعديل التصنيف أو مسح كلمة البحث.</div>
+  </div>
+</div>
+
+<!-- ===================== CREATE REQUEST ===================== -->
+<div class="screen" id="screen-create">
+  <div class="wrap">
+    <div class="form-head">
+      <button class="chat-back" onclick="showScreen('board')">→</button>
+      <h1>إنشاء طلب شراء جديد</h1>
+    </div>
+
+    <div class="request-form">
+
+      <div class="form-section">
+        <h3>معلومات رافع الطلب</h3>
+        <div class="form-row-2">
+          <div class="field"><label>اسمك</label><input type="text" id="rfPersonName" placeholder="مثال: خالد الحربي"></div>
+          <div class="field"><label>اسم الشركة</label><input type="text" id="rfCompanyName" placeholder="مثال: شركة أ"></div>
+        </div>
+        <div class="privacy-box">
+          <span class="filter-label">خيارات الخصوصية</span>
+          <label class="check-row"><input type="checkbox" id="rfHideName"> إخفاء اسمي عن الموردين (يظهر بدلاً منه "مخفي من قبل رافع الطلب")</label>
+          <label class="check-row"><input type="checkbox" id="rfHideCompany"> إخفاء اسم الشركة عن الموردين</label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>تفاصيل الطلب</h3>
+        <div class="field" style="margin-bottom:16px;"><label>عنوان الطلب</label><input type="text" id="rfTitle" placeholder="مثال: طلب توريد أجهزة حاسب آلي"></div>
+        <div class="field" style="margin-bottom:16px;"><label>وصف الطلب</label><textarea id="rfDesc" placeholder="اشرح تفاصيل الطلب والغرض منه..."></textarea></div>
+        <div class="form-row-2">
+          <div class="field">
+            <label>تصنيف الطلب</label>
+            <select id="rfCategory">
+              <option value="security">أمن وحراسة</option>
+              <option value="materials">توريد مواد</option>
+              <option value="services">خدمات عامة</option>
+              <option value="contracting">مقاولات وصيانة</option>
+              <option value="it">تقنية المعلومات</option>
+              <option value="logistics">نقل ولوجستيات</option>
+              <option value="consulting">استشارات ودراسات</option>
+              <option value="multi">توريد متعدد الأصناف</option>
+            </select>
+          </div>
+          <div class="field"><label>الكمية الإجمالية</label><input type="text" id="rfQty" placeholder="مثال: ٥٠ قطعة"></div>
+        </div>
+        <div class="form-row-2" style="margin-top:16px;">
+          <div class="field"><label>مدة التنفيذ / التسليم</label><input type="text" id="rfDuration" placeholder="مثال: خلال ٣ أسابيع"></div>
+          <div class="field"><label>آخر موعد لاستلام العروض</label><input type="text" id="rfDeadline" placeholder="مثال: ٣٠ يوليو"></div>
+        </div>
+        <div class="lc-toggle-box" style="margin-top:16px;">
+          <span class="filter-label">هل الطلب يتطلب محتوى محلي؟</span>
+          <div class="chip-row">
+            <button type="button" class="toggle-pill active" data-val="yes" onclick="setLcToggle(this,'yes')">نعم، يتطلب</button>
+            <button type="button" class="toggle-pill" data-val="no" onclick="setLcToggle(this,'no')">لا يشترط</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>بنود الطلب</h3>
+        <div id="itemsBuilder">
+          <div class="item-builder-row">
+            <input type="text" class="rf-item-name" placeholder="اسم البند">
+            <input type="text" class="rf-item-desc" placeholder="الوصف">
+            <input type="text" class="rf-item-qty" placeholder="الكمية">
+            <button type="button" class="remove-item-btn" onclick="removeItemRow(this)">✕</button>
+          </div>
+        </div>
+        <button type="button" class="btn-add-item" onclick="addItemRow()">+ إضافة بند آخر</button>
+      </div>
+
+      <div class="form-submit-row">
+        <button class="btn-ghost-form" onclick="showScreen('board')">إلغاء</button>
+        <button class="btn-publish-form" onclick="publishRequest()">نشر الطلب</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===================== INBOX ===================== -->
+<div class="screen" id="screen-inbox">
+  <div class="wrap">
+    <div class="inbox-head">
+      <h1>الرسائل</h1>
+      <span>٦ محادثات · ٦ رسائل غير مقروءة</span>
+    </div>
+    <div class="conv-list">
+
+      <div class="conv unread" onclick="openChat('conv1')">
+        <div class="avatar">م</div>
+        <div class="conv-main">
+          <div class="conv-top-row"><span class="conv-name">المورد أ</span><span class="conv-time">قبل ١٠ د</span></div>
+          <div class="conv-preview">تفضلوا، هذا عرض السعر المبدئي حسب طلبكم...</div>
+          <span class="conv-listing-tag">حراسة أمنية — ٢٦ موقع</span>
+        </div>
+        <span class="conv-badge">٣</span>
+      </div>
+
+      <div class="conv unread" onclick="openChat('conv3')">
+        <div class="avatar">هـ</div>
+        <div class="conv-main">
+          <div class="conv-top-row"><span class="conv-name">المورد هـ</span><span class="conv-time">قبل ساعة</span></div>
+          <div class="conv-preview">نقدر نغطي بندين من الأربعة، الباقي نحتاج نتأكد من التوفر</div>
+          <span class="conv-listing-tag">توريد شامل — خط إنتاج</span>
+        </div>
+        <span class="conv-badge">٢</span>
+      </div>
+
+      <div class="conv unread" onclick="openChat('conv2')">
+        <div class="avatar">ب</div>
+        <div class="conv-main">
+          <div class="conv-top-row"><span class="conv-name">المورد ب</span><span class="conv-time">قبل ٣ ساعات</span></div>
+          <div class="conv-preview">ممكن نعرف الميزانية التقريبية قبل ما نرسل العرض؟</div>
+          <span class="conv-listing-tag">أثاث ومعدات مكتبية</span>
+        </div>
+        <span class="conv-badge">١</span>
+      </div>
+
+      <div class="conv" onclick="openChat('conv4')">
+        <div class="avatar">د</div>
+        <div class="conv-main">
+          <div class="conv-top-row"><span class="conv-name">المورد د</span><span class="conv-time">أمس</span></div>
+          <div class="conv-preview">تم إرسال شهادة التصنيف، بانتظار ردكم</div>
+          <span class="conv-listing-tag">صيانة كهربائية دورية</span>
+        </div>
+      </div>
+
+      <div class="conv" onclick="openChat('conv5')">
+        <div class="avatar">و</div>
+        <div class="conv-main">
+          <div class="conv-top-row"><span class="conv-name">المورد و</span><span class="conv-time">أمس</span></div>
+          <div class="conv-preview">شكراً لكم، بانتظار الاعتماد النهائي</div>
+          <span class="conv-listing-tag">حراسة أمنية — ٢٦ موقع</span>
+        </div>
+      </div>
+
+      <div class="conv" onclick="openChat('conv6')">
+        <div class="avatar">ز</div>
+        <div class="conv-main">
+          <div class="conv-top-row"><span class="conv-name">المورد ز</span><span class="conv-time">قبل يومين</span></div>
+          <div class="conv-preview">للأسف الكمية المطلوبة أكبر من طاقتنا الحالية</div>
+          <span class="conv-listing-tag">أثاث ومعدات مكتبية</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CHAT ===================== -->
+<div class="screen" id="screen-chat">
+  <div class="wrap">
+    <div class="chat-shell">
+      <div class="chat-head">
+        <button class="chat-back" onclick="showScreen('inbox')">→</button>
+        <div class="avatar" id="chatAvatar" style="width:36px;height:36px;font-size:13px;">م</div>
+        <div>
+          <b id="chatPersonName">سالم القحطاني</b>
+          <div id="chatCompanyName" style="font-size:12.5px;color:var(--ink-soft);font-weight:600;margin-top:1px;">مؤسسة الأمان للحراسات</div>
+          <span id="chatListingName" style="font-size:11.5px;">بخصوص: حراسة أمنية — ٢٦ موقع</span>
+        </div>
+      </div>
+      <div class="chat-body" id="chatBody">
+        <!-- filled by JS per conversation -->
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="اكتب رسالتك...">
+        <button onclick="sendMsg()">إرسال</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== COMMUNITY ===================== -->
+<div class="screen" id="screen-community">
+  <div class="wrap">
+    <div class="chat-shell" style="height:640px;">
+      <div class="chat-head">
+        <div class="avatar" style="width:36px;height:36px;font-size:13px;background:var(--petrol-mist);">🌐</div>
+        <div>
+          <b>مجتمع عام</b>
+          <span>٤٨ عضو · شركات وموردون · مساحة مفتوحة للأسئلة والفائدة</span>
+        </div>
+      </div>
+      <div class="chat-body" id="communityBody"></div>
+      <div class="chat-input">
+        <input type="text" id="communityInput" placeholder="اكتب رسالتك للمجتمع...">
+        <button onclick="sendCommunityMsg()">إرسال</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ABOUT ===================== -->
+<div class="screen" id="screen-about">
+  <div class="wrap">
+
+    <div class="about-hero">
+      <span class="eyebrow">نبذة عن المنصة</span>
+      <h1>ميثاق منصة رقمية تربط طالبي الشراء بالموردين، وتوثّق كل خطوة بينهم من أول استفسار إلى توقيع العقد</h1>
+      <p>بُنيت ميثاق لحل مشكلة يومية تعيشها أي إدارة مشتريات: تشتت التواصل، غياب التوثيق، وصعوبة الوصول لمورد مناسب بسرعة وثقة.</p>
+    </div>
+
+    <div class="about-section">
+      <h2>المشكلة اللي نحلها</h2>
+      <div class="problem-list">
+        <div class="problem-card"><b>تواصل مبعثر</b><span>طلبات الشراء تتوزع بين إيميلات ومكالمات وواتساب، وما فيه مكان واحد يجمع كل المحادثة مع كل مورد.</span></div>
+        <div class="problem-card"><b>وصول محدود للموردين</b><span>الشركة تتعامل مع نفس الموردين المعتادين، وتفوّت موردين مؤهلين ما كانت تعرف عنهم.</span></div>
+        <div class="problem-card"><b>غياب التوثيق</b><span>الاتفاقات والعروض والمستندات تضيع بين المحادثات، وما فيه سجل واحد يُرجع له عند الحاجة.</span></div>
+        <div class="problem-card"><b>غموض حول المحتوى المحلي</b><span>كثير من الطلبات ما توضّح من البداية هل المطلوب يشترط محتوى محلي، فيضيع وقت الطرفين.</span></div>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <h2>وش تسوّي ميثاق عشان تحلها</h2>
+      <div class="solution-grid">
+        <div class="solution-card">
+          <span class="role-tag">لإدارات المشتريات والعقود</span>
+          <h3>نشر طلب واحد، بدل عشرات الرسائل</h3>
+          <p>تنشر تفاصيل طلبك ببنوده وتصنيفه ومتطلباته بوضوح، وتستقبل كل العروض والمراسلات في مكان واحد موثّق، جاهز للرجوع له وقت توقيع العقد أو المراجعة لاحقاً.</p>
+        </div>
+        <div class="solution-card">
+          <span class="role-tag">للموردين</span>
+          <h3>وصول مباشر لفرص حقيقية</h3>
+          <p>تتصفح طلبات الشراء المفتوحة حسب تصنيفك، وتراسل الشركة مباشرة، وتبني سجل تعاملات يعزز ثقة الشركات فيك مستقبلاً.</p>
+        </div>
+        <div class="solution-card">
+          <span class="role-tag">للطرفين معاً</span>
+          <h3>وضوح من أول لحظة</h3>
+          <p>كل طلب يوضّح من البداية هل يتطلب محتوى محلي أو لا، وتصنيفه الكامل، فما حد يضيع وقته على طلب ما ينطبق عليه.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <h2>وش معنى اسم <span>ميثاق</span></h2>
+      <div class="charter-block">
+        <div class="charter-mark">م</div>
+        <div>
+          <h3>الميثاق: عهد موثّق بين طرفين يلتزمان به</h3>
+          <p>الميثاق في أصله عهد أو اتفاق مكتوب يجمع طرفين على التزامات واضحة ومتبادلة. اخترنا هذا الاسم لأنه يعبّر بالضبط عن جوهر أي علاقة شراء ناجحة: ثقة موثّقة، شروط واضحة، والتزام من الطرفين قبل ما توصل حتى لمرحلة توقيع العقد الرسمي.</p>
+          <p>كل محادثة على المنصة، كل عرض سعر، وكل مستند يُطلب أو يُرسل — هو جزء من "ميثاق" غير رسمي يبني الثقة بين الشركة والمورد، قبل أن يتحول إلى عقد ملزم. الاسم يذكّر الطرفين إن التعامل التجاري في جوهره اتفاق أمانة، مو مجرد صفقة عابرة.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== NEWS ===================== -->
+<div class="screen" id="screen-news">
+  <div class="wrap">
+    <div class="news-head">
+      <h1>الأخبار</h1>
+      <p>آخر المستجدات في عالم المشتريات والعقود والمحتوى المحلي والمنافسات الحكومية.</p>
+    </div>
+
+    <div class="news-feature">
+      <img src="https://picsum.photos/seed/methaq-feature/900/600" alt="">
+      <div class="news-feature-body">
+        <span class="news-date">٩ يوليو ٢٠٢٦</span>
+        <h2>فتح باب التسجيل في منصة إلكترونية موحّدة لطرح المنافسات الحكومية الصغيرة</h2>
+        <p>مبادرة تجريبية تتيح للجهات الحكومية طرح المنافسات محدودة القيمة عبر منصة موحّدة، بهدف تسريع دورة الطرح وتوسيع قاعدة المتنافسين من المنشآت الصغيرة والمتوسطة.</p>
+      </div>
+    </div>
+
+    <div class="news-grid">
+
+      <div class="news-card">
+        <img src="https://picsum.photos/seed/methaq-news2/500/340" alt="">
+        <div class="news-card-body">
+          <span class="news-date">٧ يوليو ٢٠٢٦</span>
+          <h3>تحديثات دورية على نسب المحتوى المحلي المستهدفة لعدد من الأنشطة الصناعية</h3>
+          <p>مراجعات دورية تطال النسب المستهدفة لبعض الأنشطة ضمن القائمة الإلزامية، وسط دعوات لإدارات المشتريات لمتابعة آخر نسخة معتمدة قبل ترسية أي عقد جديد.</p>
+        </div>
+      </div>
+
+      <div class="news-card">
+        <img src="https://picsum.photos/seed/methaq-news3/500/340" alt="">
+        <div class="news-card-body">
+          <span class="news-date">٥ يوليو ٢٠٢٦</span>
+          <h3>توجه متزايد نحو بند "المرونة التعاقدية" في عقود الخدمات طويلة المدى</h3>
+          <p>خبراء عقود يشيرون إلى ازدياد إدراج بنود تسمح بمراجعة الأسعار دورياً في العقود التي تمتد أكثر من عام، لمواكبة تقلبات تكاليف التشغيل.</p>
+        </div>
+      </div>
+
+      <div class="news-card">
+        <img src="https://picsum.photos/seed/methaq-news4/500/340" alt="">
+        <div class="news-card-body">
+          <span class="news-date">٣ يوليو ٢٠٢٦</span>
+          <h3>تقارير تشير إلى تسارع تبنّي أدوات رقمية لإدارة مقارنة العروض بين إدارات المشتريات</h3>
+          <p>استطلاع لعدد من إدارات المشتريات في القطاعين الحكومي وشبه الحكومي يظهر تحوّلاً تدريجياً من كشوفات المقارنة اليدوية إلى أدوات آلية تختصر وقت المراجعة.</p>
+        </div>
+      </div>
+
+      <div class="news-card">
+        <img src="https://picsum.photos/seed/methaq-news5/500/340" alt="">
+        <div class="news-card-body">
+          <span class="news-date">٣٠ يونيو ٢٠٢٦</span>
+          <h3>ارتفاع عدد المنشآت المسجّلة في منصات المنافسات الحكومية خلال الربع الأخير</h3>
+          <p>بيانات أولية تشير إلى نمو ملحوظ في تسجيل المنشآت الصغيرة والمتوسطة، مع تركيز خاص على قطاعات الخدمات المساندة والتوريد.</p>
+        </div>
+      </div>
+
+      <div class="news-card">
+        <img src="https://picsum.photos/seed/methaq-news6/500/340" alt="">
+        <div class="news-card-body">
+          <span class="news-date">٢٧ يونيو ٢٠٢٦</span>
+          <h3>ندوات توعوية للمنشآت الصغيرة حول آلية احتساب نسبة المحتوى المحلي واشتراطاتها</h3>
+          <p>فعاليات تستهدف توضيح آلية احتساب النسبة والمستندات المطلوبة لإثباتها، وسط إقبال من موردين يسعون لتحسين تنافسيتهم في المناقصات المشترطة.</p>
+        </div>
+      </div>
+
+      <div class="news-card">
+        <img src="https://picsum.photos/seed/methaq-news7/500/340" alt="">
+        <div class="news-card-body">
+          <span class="news-date">٢٤ يونيو ٢٠٢٦</span>
+          <h3>دعوات لتوحيد نماذج تقديم العروض بين الجهات لتسهيل عمل الموردين الصغار</h3>
+          <p>عدد من الموردين يشيرون إلى أن اختلاف نماذج التقديم بين جهة وأخرى يستهلك وقتاً إضافياً، ويقترحون اعتماد نموذج موحّد للحقول الأساسية على الأقل.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="news-note">محتوى إخباري تجريبي لأغراض العرض فقط — لا يعكس أخباراً فعلية.</p>
+  </div>
+</div>
+
+<footer>نموذج أوّلي لأغراض العرض فقط · © ٢٠٢٦ ميثاق</footer>
+
+<script>
+const conversations = {
+  conv1: {
+    supplier: 'المورد أ', avatar: 'م', listing: 'بخصوص: حراسة أمنية — ٢٦ موقع',
+    person: 'سالم القحطاني', personHidden: false,
+    company: 'مؤسسة الأمان للحراسات', companyHidden: false,
+    messages: [
+      {who:'them', text:'السلام عليكم، بخصوص طلبكم رقم ٢٦-حراسة، الكمية المطلوبة ممكن تكون على دفعتين بدل دفعة وحدة؟', time:'٩:١٠ ص'},
+      {who:'me', text:'وعليكم السلام، نعم نقبل التسليم على دفعتين، الدفعة الأولى خلال أسبوعين من توقيع العقد.', time:'٩:١٨ ص'},
+      {who:'them', text:'تمام، تفضلوا عرضنا المبدئي:', time:'٩:٤٠ ص'},
+      {who:'them', quote:true, text:'<b>عرض سعر أولي</b><br>٢٩ حارس (نهارية وليلية) — سعر إجمالي شهري: ٩٨٬٠٠٠ ريال شامل الضريبة<br>مدة البدء: خلال ١٤ يوم من الاعتماد', time:'٩:٤١ ص'},
+      {who:'me', text:'شكراً على العرض، قبل الاعتماد نحتاج نستلم المستندات الرسمية التالية:', time:'١٠:٠٥ ص'},
+      {who:'me', doc:true, text:'', time:'١٠:٠٥ ص', docs:['صورة السجل التجاري ساري المفعول','شهادة الزكاة والدخل','شهادة تصنيف المقاولين (إن وجدت)','شهادة نسبة المحتوى المحلي المعتمدة من منشآت']},
+      {who:'them', text:'تمام، بنجهز كل المستندات ونرسلها خلال يومين.', time:'١٠:١٢ ص'},
+    ]
+  },
+  conv2: {
+    supplier: 'المورد ب', avatar: 'ب', listing: 'بخصوص: أثاث ومعدات مكتبية',
+    person: 'مخفي من قبل المرسل', personHidden: true,
+    company: 'مؤسسة النور للتجارة', companyHidden: false,
+    messages: [
+      {who:'them', text:'السلام عليكم، ممكن نعرف الميزانية التقريبية قبل ما نرسل العرض؟', time:'أمس ٤:٢٠ م'},
+      {who:'me', text:'وعليكم السلام، ما فيه سقف محدد، نبي أفضل عرض جودة وسعر ضمن مدة التسليم المذكورة.', time:'أمس ٤:٣٥ م'},
+    ]
+  },
+  conv3: {
+    supplier: 'المورد هـ', avatar: 'هـ', listing: 'بخصوص: توريد شامل — خط إنتاج',
+    person: 'عبدالعزيز الشهري', personHidden: false,
+    company: 'مخفي من قبل المرسل', companyHidden: true,
+    messages: [
+      {who:'them', text:'السلام عليكم، اطلعنا على الطلب، نقدر نغطي بندين من الأربعة (مواد التعبئة ومعدات السلامة)، الباقي نحتاج نتأكد من التوفر مع مورد فرعي.', time:'قبل ساعة'},
+      {who:'me', text:'وعليكم السلام، تمام، ممكن ترسلوا عرض السعر لهذين البندين وتوضحوا مدة التسليم؟', time:'قبل ٤٥ د'},
+    ]
+  },
+  conv4: {
+    supplier: 'المورد د', avatar: 'د', listing: 'بخصوص: صيانة كهربائية دورية',
+    person: 'مخفي من قبل المرسل', personHidden: true,
+    company: 'مخفي من قبل المرسل', companyHidden: true,
+    messages: [
+      {who:'them', text:'السلام عليكم، تم إرسال شهادة التصنيف المطلوبة، بانتظار ردكم للاعتماد.', time:'أمس'},
+    ]
+  },
+  conv5: {
+    supplier: 'المورد و', avatar: 'و', listing: 'بخصوص: حراسة أمنية — ٢٦ موقع',
+    person: 'فيصل العنزي', personHidden: false,
+    company: 'مؤسسة الرواد التجارية', companyHidden: false,
+    messages: [
+      {who:'them', text:'شكراً لكم على المراجعة، بانتظار الاعتماد النهائي من فريقكم.', time:'أمس'},
+    ]
+  },
+  conv6: {
+    supplier: 'المورد ز', avatar: 'ز', listing: 'بخصوص: أثاث ومعدات مكتبية',
+    person: 'ماجد السبيعي', personHidden: false,
+    company: 'شركة الصقر التجارية', companyHidden: false,
+    messages: [
+      {who:'them', text:'للأسف الكمية المطلوبة أكبر من طاقتنا الإنتاجية الحالية، نعتذر عن التقديم هذي المرة.', time:'قبل يومين'},
+    ]
+  },
+  conv7: {
+    supplier: 'المورد ح', avatar: 'ح', listing: 'بخصوص: نظام إدارة مستندات',
+    person: 'مخفي من قبل المرسل', personHidden: true,
+    company: 'مؤسسة الحلول الرقمية', companyHidden: false,
+    messages: [
+      {who:'them', text:'السلام عليكم، نقدر نوفر النظام لعدد ٣٠ مستخدم مع الاستضافة السحابية، هل التدريب مطلوب حضورياً أو عن بُعد؟', time:'قبل ٣٠ د'},
+      {who:'me', text:'وعليكم السلام، عن بُعد يكفي، بس نبي جلستين على الأقل.', time:'قبل ٢٠ د'},
+    ]
+  },
+};
+
+function renderMessage(m){
+  if(m.doc){
+    let items = m.docs.map(d => `<li>${d}</li>`).join('');
+    return `<div class="msg-group ${m.who}"><div class="bubble doc-request">نحتاج المستندات التالية قبل الاعتماد:<ul>${items}</ul></div><div class="bubble-time">${m.time}</div></div>`;
+  }
+  if(m.quote){
+    return `<div class="msg-group ${m.who}"><div class="bubble quote">${m.text}</div><div class="bubble-time">${m.time}</div></div>`;
+  }
+  return `<div class="msg-group ${m.who}"><div class="bubble">${m.text}</div><div class="bubble-time">${m.time}</div></div>`;
+}
+
+function openChat(id){
+  const c = conversations[id];
+  const personEl = document.getElementById('chatPersonName');
+  const companyEl = document.getElementById('chatCompanyName');
+  personEl.textContent = c.person;
+  personEl.classList.toggle('hidden-id', c.personHidden);
+  companyEl.textContent = c.company;
+  companyEl.classList.toggle('hidden-id', c.companyHidden);
+  document.getElementById('chatListingName').textContent = c.listing;
+  document.getElementById('chatAvatar').textContent = (c.personHidden && c.companyHidden) ? '؟' : c.avatar;
+  document.getElementById('chatBody').innerHTML = c.messages.map(renderMessage).join('');
+  showScreen('chat');
+  const body = document.getElementById('chatBody');
+  body.scrollTop = body.scrollHeight;
+}
+
+function sendMsg(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const body = document.getElementById('chatBody');
+  body.insertAdjacentHTML('beforeend', renderMessage({who:'me', text:text, time:'الآن'}));
+  body.scrollTop = body.scrollHeight;
+  input.value = '';
+}
+document.getElementById('chatInput').addEventListener('keydown', e => { if(e.key === 'Enter') sendMsg(); });
+
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.getElementById('navBoard').classList.toggle('active', name === 'board' || name === 'create');
+  document.getElementById('navInbox').classList.toggle('active', name === 'inbox' || name === 'chat');
+  document.getElementById('navCommunity').classList.toggle('active', name === 'community');
+  document.getElementById('navAbout').classList.toggle('active', name === 'about');
+  document.getElementById('navNews').classList.toggle('active', name === 'news');
+  if(name === 'community') renderCommunity();
+}
+
+let loginRole = 'company';
+function setLoginRole(role){
+  loginRole = role;
+  document.getElementById('roleCompanyBtn').classList.toggle('active', role === 'company');
+  document.getElementById('roleSupplierBtn').classList.toggle('active', role === 'supplier');
+}
+function doLogin(){
+  document.getElementById('rolePill').textContent = 'مسجّل دخول كـ: ' + currentIdentity();
+  showScreen('board');
+}
+
+const communityMessages = [
+  {sender:'المورد ج', role:'supplier', text:'السلام عليكم الجميع، حد يعرف وين نلقى تصنيف المقاولين المطلوب قبل التقديم على طلب معيّن؟', time:'قبل ٣ ساعات'},
+  {sender:'شركة أ', role:'company', text:'وعليكم السلام، عادة نذكرها داخل وصف الطلب نفسه. لو ما كانت موجودة، تقدر تسأل مباشرة بالمحادثة الخاصة بالطلب.', time:'قبل ساعتين و٤٥ د'},
+  {sender:'المورد هـ', role:'supplier', text:'بالنسبة لمدة التسليم، أقترح دايم نطاق (مثلاً ١٠-١٥ يوم) بدل رقم ثابت، يريح الطرفين.', time:'قبل ساعتين'},
+  {sender:'شركة ب', role:'company', text:'فكرة حلوة، بنطبقها في طلبنا الجاي إن شاء الله.', time:'قبل ساعة و٤٥ د'},
+  {sender:'المورد ز', role:'supplier', text:'فائدة سريعة للجميع: لا تنسون تجددون شهادة المحتوى المحلي كل سنة، أغلب الطلبات ترفض العرض لو الشهادة منتهية حتى لو النسبة نفسها مطابقة.', time:'قبل ساعة و٢٠ د'},
+  {sender:'المورد و', role:'supplier', text:'معلومة مهمة، شكراً لك 🙏', time:'قبل ساعة وربع'},
+  {sender:'شركة ج', role:'company', text:'سؤال للجميع: أي طريقة تفضلون لاستلام العروض — عبر الموقع مباشرة، أو ملف واحد يجمع كل البنود؟', time:'قبل ٥٠ د'},
+  {sender:'المورد أ', role:'supplier', text:'من جهتنا نفضل ملف واحد منظم، أسهل للمراجعة من طرفكم وأسرع لنا بالتجهيز.', time:'قبل ٤٠ د'},
+  {sender:'المورد د', role:'supplier', text:'أتفق، وياليت يكون فيه نموذج موحّد نستخدمه للعروض بدل كل شركة تطلب شكل مختلف.', time:'قبل ٣٥ د'},
+  {sender:'شركة د', role:'company', text:'ملاحظة مسجّلة، نشوف نضيفها كخيار اختياري بالمنصة.', time:'قبل ٢٥ د'},
+  {sender:'المورد ب', role:'supplier', text:'فائدة ثانية: إذا الطلب فيه أكثر من بند مختلف تماماً (زي توريد + خدمة نقل)، يفضل توضيح هل تقبلون عروض جزئية على بند واحد بس.', time:'قبل ١٥ د'},
+  {sender:'شركة ب', role:'company', text:'صحيح، سنوضحها بشكل واضح في وصف الطلبات القادمة.', time:'قبل ١٠ د'},
+];
+
+function currentIdentity(){
+  return loginRole === 'company' ? 'شركة أ' : 'المورد أ';
+}
+
+function renderGroupMsg(m){
+  const me = m.sender === currentIdentity();
+  const cls = me ? 'me' : 'them';
+  const badgeClass = m.role === 'company' ? 'company' : 'supplier';
+  const badgeLabel = m.role === 'company' ? 'شركة' : 'مورّد';
+  const header = me ? '' : `<div class="gmsg-sender"><b>${m.sender}</b><span class="role-badge ${badgeClass}">${badgeLabel}</span></div>`;
+  return `<div class="gmsg ${cls}">${header}<div class="bubble">${m.text}</div><div class="gmsg-time">${m.time}</div></div>`;
+}
+
+function renderCommunity(){
+  const body = document.getElementById('communityBody');
+  body.innerHTML = communityMessages.map(renderGroupMsg).join('');
+  body.scrollTop = body.scrollHeight;
+}
+
+function sendCommunityMsg(){
+  const input = document.getElementById('communityInput');
+  const text = input.value.trim();
+  if(!text) return;
+  communityMessages.push({sender: currentIdentity(), role: loginRole, text: text, time: 'الآن'});
+  renderCommunity();
+  input.value = '';
+}
+document.getElementById('communityInput').addEventListener('keydown', e => { if(e.key === 'Enter') sendCommunityMsg(); });
+
+let rfLcValue = 'yes';
+function setLcToggle(btn, val){
+  document.querySelectorAll('#screen-create .toggle-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  rfLcValue = val;
+}
+
+function addItemRow(){
+  const wrap = document.getElementById('itemsBuilder');
+  const row = document.createElement('div');
+  row.className = 'item-builder-row';
+  row.innerHTML = `
+    <input type="text" class="rf-item-name" placeholder="اسم البند">
+    <input type="text" class="rf-item-desc" placeholder="الوصف">
+    <input type="text" class="rf-item-qty" placeholder="الكمية">
+    <button type="button" class="remove-item-btn" onclick="removeItemRow(this)">✕</button>`;
+  wrap.appendChild(row);
+}
+function removeItemRow(btn){
+  const rows = document.querySelectorAll('#itemsBuilder .item-builder-row');
+  if(rows.length > 1) btn.closest('.item-builder-row').remove();
+}
+
+const categoryLabels = {
+  security:'أمن وحراسة', materials:'توريد مواد', services:'خدمات عامة',
+  contracting:'مقاولات وصيانة', it:'تقنية المعلومات', logistics:'نقل ولوجستيات',
+  consulting:'استشارات ودراسات', multi:'توريد متعدد الأصناف'
+};
+let newConvCounter = 100;
+
+function publishRequest(){
+  const personName = document.getElementById('rfPersonName').value.trim() || 'رافع الطلب';
+  const companyName = document.getElementById('rfCompanyName').value.trim() || 'الشركة';
+  const hideName = document.getElementById('rfHideName').checked;
+  const hideCompany = document.getElementById('rfHideCompany').checked;
+  const title = document.getElementById('rfTitle').value.trim() || 'طلب شراء جديد';
+  const desc = document.getElementById('rfDesc').value.trim() || 'بدون وصف إضافي.';
+  const cat = document.getElementById('rfCategory').value;
+  const qty = document.getElementById('rfQty').value.trim() || 'غير محدد';
+  const duration = document.getElementById('rfDuration').value.trim() || 'غير محدد';
+  const deadline = document.getElementById('rfDeadline').value.trim() || 'غير محدد';
+
+  if(!document.getElementById('rfTitle').value.trim()){
+    alert('الرجاء كتابة عنوان الطلب على الأقل.');
+    return;
+  }
+
+  const itemRows = document.querySelectorAll('#itemsBuilder .item-builder-row');
+  let itemsHtml = '';
+  itemRows.forEach(row=>{
+    const n = row.querySelector('.rf-item-name').value.trim();
+    const d = row.querySelector('.rf-item-desc').value.trim();
+    const q = row.querySelector('.rf-item-qty').value.trim();
+    if(n || d || q){
+      itemsHtml += `<div class="item-row"><span class="item-name">${n || 'بند'}</span><span class="item-desc">${d || '—'}</span><span class="item-qty">${q || '—'}</span></div>`;
+    }
+  });
+  if(!itemsHtml) itemsHtml = '<div class="item-row"><span class="item-name">—</span><span class="item-desc">لم تُضف بنود تفصيلية</span><span class="item-qty">—</span></div>';
+
+  const posterLine = hideName
+    ? '<div class="poster-name hidden-id">مخفي من قبل رافع الطلب</div>'
+    : `<div class="poster-name">${personName}</div>`;
+  const companyLine = hideCompany
+    ? '<div class="company-name hidden-id">مخفي من قبل رافع الطلب</div>'
+    : `<div class="company-name">${companyName}</div>`;
+  const avatarChar = (hideName && hideCompany) ? '؟' : (hideName ? companyName.trim().charAt(0) : personName.trim().charAt(0)) || '؟';
+  const lcTag = rfLcValue === 'yes'
+    ? '<span class="tag lc-yes">يتطلب محتوى محلي</span>'
+    : '<span class="tag lc-no">لا يشترط محتوى محلي</span>';
+
+  const convId = 'conv' + (newConvCounter++);
+  conversations[convId] = {
+    supplier: 'مورّد جديد', avatar: 'م', listing: 'بخصوص: ' + title,
+    person: 'مورّد مهتم', personHidden: false,
+    company: 'جهة غير محددة بعد', companyHidden: false,
+    messages: [
+      {who:'them', text:'السلام عليكم، اطلعنا على طلبكم الجديد ونحتاج بعض التفاصيل قبل تجهيز عرضنا.', time:'الآن'}
+    ]
+  };
+
+  const html = `
+    <div class="listing" data-cat="${cat}" data-lc="${rfLcValue}">
+      <div class="listing-top">
+        <div class="company">
+          <div class="avatar">${avatarChar}</div>
+          <div>
+            ${posterLine}
+            ${companyLine}
+            <div class="company-meta">نُشر الآن</div>
+          </div>
+        </div>
+        <div class="tags"><span class="tag type">${categoryLabels[cat]}</span>${lcTag}</div>
+      </div>
+      <div class="listing-title">${title}</div>
+      <div class="listing-desc">${desc}</div>
+      <div class="meta-row"><span>الكمية الإجمالية: <b>${qty}</b></span><span>المدة: <b>${duration}</b></span></div>
+      <div class="items">${itemsHtml}</div>
+      <div class="listing-bottom">
+        <span class="deadline">آخر موعد لاستلام العروض: ${deadline}</span>
+        <button class="btn-msg" onclick="openChat('${convId}')">راسل الشركة</button>
+      </div>
+    </div>`;
+
+  document.getElementById('feed').insertAdjacentHTML('afterbegin', html);
+  applyFilters();
+  showScreen('board');
+}
+
+function applyFilters(){
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const listings = document.querySelectorAll('#feed .listing');
+  let anyVisible = false;
+  listings.forEach(function(el){
+    const matchCat = activeCat === 'all' || el.dataset.cat === activeCat;
+    const matchLc = activeLc === 'all' || el.dataset.lc === activeLc;
+    const matchSearch = !q || el.innerText.toLowerCase().includes(q);
+    const show = matchCat && matchLc && matchSearch;
+    el.style.display = show ? '' : 'none';
+    if(show) anyVisible = true;
+  });
+  document.getElementById('emptyState').style.display = anyVisible ? 'none' : 'block';
+}
+
+document.querySelectorAll('.chip[data-cat]').forEach(chip=>{
+  chip.addEventListener('click', function(){
+    document.querySelectorAll('.chip[data-cat]').forEach(c=>c.classList.remove('active'));
+    this.classList.add('active');
+    activeCat = this.dataset.cat;
+    applyFilters();
+  });
+});
+document.querySelectorAll('.chip[data-lc]').forEach(chip=>{
+  chip.addEventListener('click', function(){
+    document.querySelectorAll('.chip[data-lc]').forEach(c=>c.classList.remove('active'));
+    this.classList.add('active');
+    activeLc = this.dataset.lc;
+    applyFilters();
+  });
+});
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+showScreen('login');
+</script>
+
+</body>
+</html>
